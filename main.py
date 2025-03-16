@@ -42,7 +42,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     groups = [group.id for group in user.groups]
     categories = [cat.id for cat in user.user_to_categories]
 
-    return User(
+    user_data = User(
         id=user.id,
         tag=user.tag,
         balance=user.balance,
@@ -51,8 +51,10 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
         user_data=user.user_data,
         created_at=user.created_at,
         groups=groups,
-        user_to_categories = categories
+        user_to_categories=categories
     )
+    json = jsonable_encoder(user_data)
+    return JSONResponse(content=json, status_code=OK)
 
 
 @app.post("/users/{user_id}/add_category")
