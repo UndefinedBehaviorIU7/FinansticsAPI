@@ -1,2 +1,2 @@
-# FinasticsAPI
+# FinansticsAPI
 API для финастики
