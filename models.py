@@ -1,3 +1,5 @@
+from sqlite3 import Date
+
 from sqlalchemy import (
     Column, Integer, String, DateTime, ForeignKey
 )
