@@ -4,7 +4,6 @@ from datetime import datetime
 from fastapi import FastAPI, Depends
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from starlette.responses import FileResponse
 from fastapi.responses import JSONResponse
 
 from codes import *
@@ -193,3 +192,31 @@ async def register(username: str,
     token = str(uuid.uuid4())
     tokens.append({'token': token, 'id': new_user.id})
     return JSONResponse({'user_id': new_user.id, 'token': token}, status_code=OK)
+
+
+@app.get("/users/{user_id}/actions")
+async def get_user_actions(user_id: int, db: Session = Depends(get_db)):
+    user_info = db.query(User).filter(User.id == user_id).first()
+    if user_info is None:
+        return JSONResponse({'message': 'no user'}, status_code=NOT_FOUND)
+    actions_list = user_info.actions
+    actions_json = jsonable_encoder(actions_list)
+    return JSONResponse(content=actions_json, status_code=OK)
+
+
+@app.get("/groups/{group_id}")
+async def get_group(group_id: int, db: Session = Depends(get_db)):
+    group_info = db.query(Group).filter(Group.id == group_id).first()
+    if group_info is None:
+        return JSONResponse({'message': 'group not found'}, status_code=NOT_FOUND)
+    group_json = jsonable_encoder(group_info)
+    return JSONResponse(content=group_json, status_code=OK)
+
+
+@app.get("/groups/all")
+async def get_all_groups(db: Session = Depends(get_db)):
+    groups = db.query(Group).all()
+    groups_json = jsonable_encoder(groups)
+    return JSONResponse(content=groups_json, status_code=OK)
+
+
